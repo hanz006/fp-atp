@@ -29,35 +29,15 @@ void displaySongs(const Playlist* playlist) {
     }
 }
 
-void removeSong(Playlist* playlist, const string& title) {
-    Song *current = playlist->head, *prev = nullptr;
+void sortSongs(Playlist* playlist) {
+    if (!playlist->head || !playlist->head->next) return; // If there are fewer than 2 songs, no sorting needed.
 
-    while (current != nullptr && current->title != title) {
-        prev = current;
-        current = current->next;
-    }
-
-    if (current == nullptr) {
-        cout << "Lagu tidak ditemukan!" << endl;
-        return;
-    }
-
-    if (prev == nullptr) {
-        playlist->head = current->next;
-    } else {
-        prev->next = current->next;
-    }
-
-    delete current;
-    cout << "Lagu '" << title << "' telah dihapus." << endl;
-}
-
-void sortSongs(Playlist* playlist, bool bySinger) {
-    if (!playlist->head || !playlist->head->next) return;
-
+    // Bubble sort algorithm for the linked list
     for (Song* i = playlist->head; i->next != nullptr; i = i->next) {
         for (Song* j = i->next; j != nullptr; j = j->next) {
-            if ((bySinger && i->singer > j->singer) || (!bySinger && i->title > j->title)) {
+            // Compare titles alphabetically
+            if (i->title > j->title) {
+                // Swap titles and singers
                 swap(i->title, j->title);
                 swap(i->singer, j->singer);
             }
@@ -119,4 +99,25 @@ void deletePlaylist(Playlist*& playlists) {
         playlists = playlists->next;
         delete tempPlaylist;
     }
+}
+
+int main() {
+    Playlist* playlists = nullptr;
+    createPlaylist(playlists, "My Playlist");
+
+    addSong(playlists, "Yesterday", "The Beatles");
+    addSong(playlists, "Imagine", "John Lennon");
+    addSong(playlists, "Hello", "Adele");
+
+    cout << "Before Sorting:" << endl;
+    displaySongs(playlists);
+
+    sortSongs(playlists);
+
+    cout << "\nAfter Sorting:" << endl;
+    displaySongs(playlists);
+
+    deletePlaylist(playlists);
+
+    return 0;
 }
